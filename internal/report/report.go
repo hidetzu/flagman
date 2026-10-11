@@ -327,3 +327,79 @@ func tradeoffs(w io.Writer, a, b replay.Metrics) {
 		fmt.Fprintf(w, "  %s\n", x)
 	}
 }
+
+// HookMessage is what an agent hook shows for a decision: the headline, the decision id, the
+// strongest reasons, and the command that records what the human did. The id is spelled out
+// because "last" can point at a later, silent decision by the time the human answers.
+func HookMessage(l *decisionlog.Line) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "flagman: %s (score %d, decision %s)", Headline(l.Result.Verdict), l.Result.Score, l.ID)
+	n := 0
+	for _, f := range score.FiredOnly(l.Findings) {
+		fmt.Fprintf(&b, "\n- %s: %s", f.Rule, f.Summary)
+		if n++; n == 4 {
+			break
+		}
+	}
+	if l.Result.Verdict == score.Defer {
+		fmt.Fprintf(&b, "\nrecord what you decide: flagman human %s approved|changed|stopped", l.ID)
+	} else {
+		fmt.Fprintf(&b, "\nafterwards: flagman outcome %s ok|problem", l.ID)
+	}
+	return b.String()
+}
+
+// Pending lists the decisions whose truth is not known yet, newest first, so the human and
+// outcome can be recorded in one sitting. Continue decisions are listed too: without their
+// outcomes a false autonomy cannot be counted at all.
+func Pending(w io.Writer, entries []*decisionlog.Entry, limit int) {
+	var open []*decisionlog.Entry
+	for _, e := range entries {
+		if _, ok := decisionlog.TruthOf(e); !ok {
+			open = append(open, e)
+		}
+	}
+	fmt.Fprintf(w, "%d of %d decisions have no known truth yet (no human decision, outcome or label)\n", len(open), len(entries))
+	if len(open) == 0 {
+		return
+	}
+	byVerdict := map[score.Verdict]int{}
+	for _, e := range open {
+		if e.Decision.Result != nil {
+			byVerdict[e.Decision.Result.Verdict]++
+		}
+	}
+	fmt.Fprintf(w, "  continue %d, review %d, defer %d\n\n", byVerdict[score.Continue], byVerdict[score.Review], byVerdict[score.Defer])
+	shown := 0
+	for i := len(open) - 1; i >= 0 && (limit <= 0 || shown < limit); i-- {
+		e := open[i]
+		d := e.Decision
+		v, sc := "-", 0
+		if d.Result != nil {
+			v, sc = string(d.Result.Verdict), d.Result.Score
+		}
+		branch := ""
+		if d.Snapshot.Repo != nil {
+			branch = d.Snapshot.Repo.Root + "@" + d.Snapshot.Repo.Branch
+		}
+		fmt.Fprintf(w, "%s  %s  %-8s %-8s %3d  %s\n", d.ID, d.At.Local().Format("01-02 15:04"), d.Snapshot.Action, v, sc, branch)
+		var top []string
+		for _, f := range score.FiredOnly(d.Findings) {
+			top = append(top, f.Rule)
+			if len(top) == 3 {
+				break
+			}
+		}
+		if len(top) > 0 {
+			fmt.Fprintf(w, "      %s\n", strings.Join(top, ", "))
+		}
+		shown++
+	}
+	if shown < len(open) {
+		fmt.Fprintf(w, "… %d older not shown (--all)\n", len(open)-shown)
+	}
+	fmt.Fprintln(w, "\nrecord:  flagman outcome <id> ok|problem    flagman human <id> approved|changed|stopped")
+	if byVerdict[score.Continue] > 0 {
+		fmt.Fprintln(w, "⚠ continue decisions need an outcome: without one, a false autonomy cannot be counted")
+	}
+}

@@ -40,3 +40,14 @@ Ambig-SWE on agents' weak sense of when to ask; Claude Code hook docs for `ask`
 ## Can it change?
 
 Yes: more adapters can be added without touching the core.
+
+## Updates
+
+### 2026-10-11 — the hook also speaks on review
+
+The body's "says nothing otherwise" stays as the record of when it was written.
+⚠ But since the change that added `flagman pending`, the hook shows the reasons on `review` as a `systemMessage` (to
+the human) and `additionalContext` (to the agent), still without a `permissionDecision`. Grounds:
+a review the human never sees cannot get an outcome recorded, and unrecorded decisions bias the
+log toward deferrals (Claude Code hook docs: `systemMessage` is shown to the user; a hook without
+a decision leaves the normal permission flow in charge).

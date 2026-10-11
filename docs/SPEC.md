@@ -42,7 +42,8 @@ reviewer's to read.**
 | Replay | Comparison ranks false autonomy, then missed escalation, then cost, and lists what the better side is worse at | ADR 0006 | `TestBetterRanksFalseAutonomyFirst`, `TestSuggestImprovesOnTheHeldOutPart`, `TestFeedbackLoop` |
 | Suggest | Thresholds fitted on older labelled decisions, judged on newer ones; unchanged when nothing is wrong; rules seen in false autonomies, and false autonomies no rule saw, are listed | ADR 0006 | `TestSuggestImprovesOnTheHeldOutPart`, `TestSuggestKeepsThresholdsWhenNothingIsWrong`, `TestLimitationsAreMeasuredAsFalseAutonomy` |
 | Scenarios | Every hand-labelled case in `testdata/scenarios` gets its label under the default config, with several of each verdict | ADR 0006 | `TestScenariosGetTheirLabelUnderDefaults` |
-| Hook | `hook claude-code` maps shell commands to actions, answers `ask` on defer, gives no opinion otherwise, and exits 0 on bad input | ADR 0008 | `TestActionForCommand`, `TestHookNeverFailsTheAgent`, `TestClaudeCodeHook` |
+| Hook | `hook claude-code` maps shell commands to actions, answers `ask` on defer, shows the reasons without a permission decision on review, says nothing on continue, and exits 0 on bad input; each message names the decision id and the command to record it | ADR 0008 | `TestActionForCommand`, `TestHookNeverFailsTheAgent`, `TestClaudeCodeHook`, `TestHookMessageNamesTheDecisionAndHowToRecordIt` |
+| Log | `pending` lists decisions with no known truth, newest first, with the count over all decisions, and calls out unrecorded continue decisions | ADR 0005 | `TestPendingListsOnlyDecisionsWithoutTruthNewestFirst` |
 | Config | Validated on load; the hash changes with any parameter and survives a round trip with each weight's grounds | — | `TestDefaultIsValidAndRoundTrips`, `TestHashChangesWithAnyParameter`, `TestValidateRejectsMeaninglessNumbers` |
 
 ## 2. What this deliberately does not implement

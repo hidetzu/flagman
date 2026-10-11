@@ -328,6 +328,22 @@ func TestClaudeCodeHook(t *testing.T) {
 	if bytes.Contains(b, []byte("gh pr merge 3")) {
 		t.Fatal("the raw command must not be logged")
 	}
+	// Review: no task and no test result on a push of a feature branch scores between the
+	// thresholds. The hook shows the reasons but takes no permission decision.
+	in = `{"tool_name":"Bash","cwd":"` + r.dir + `","tool_input":{"command":"git push origin feat/lexer"}}`
+	out, _, code = r.flagman(in, "hook", "claude-code")
+	var rev map[string]any
+	if err := json.Unmarshal([]byte(out), &rev); err != nil || code != 0 {
+		t.Fatalf("a review must come back as JSON with exit 0; got %d %q (%v)", code, out, err)
+	}
+	msg, _ := rev["systemMessage"].(string)
+	hs, _ := rev["hookSpecificOutput"].(map[string]any)
+	if !strings.Contains(msg, "REVIEW") || !strings.Contains(msg, "flagman outcome d-") || hs["additionalContext"] != msg {
+		t.Fatalf("the review reasons must reach both the human and the agent:\n%s", out)
+	}
+	if _, has := hs["permissionDecision"]; has {
+		t.Fatalf("a review must not take a permission decision:\n%s", out)
+	}
 	in = `{"tool_name":"Bash","cwd":"` + r.dir + `","tool_input":{"command":"go test ./..."}}`
 	if out, _, code := r.flagman(in, "hook", "claude-code"); code != 0 || out != "" {
 		t.Fatalf("a command flagman does not judge gets no opinion; got %d %q", code, out)
