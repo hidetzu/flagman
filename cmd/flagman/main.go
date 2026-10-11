@@ -69,6 +69,7 @@ usage:
   flagman label   <id|last> continue|review|defer [--note TEXT]
   flagman log     [--json]
   flagman show    <id|last> [--json]
+  flagman pending [--all]       decisions still waiting for a human decision or outcome
   flagman replay  [--config FILE] [--compare FILE] [--scenarios DIR] [--json]
   flagman suggest [--test-share 0.3] [--write FILE] [--scenarios DIR]
   flagman rules
@@ -106,6 +107,8 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		err = cmdLog(rest, stdout)
 	case "show":
 		err = cmdShow(rest, stdout)
+	case "pending":
+		err = cmdPending(rest, stdout)
 	case "replay":
 		err = cmdReplay(rest, stdout)
 	case "suggest":
@@ -453,6 +456,25 @@ func cmdShow(args []string, stdout io.Writer) error {
 		rep = &ok
 	}
 	report.Show(stdout, e, rep)
+	return nil
+}
+
+func cmdPending(args []string, stdout io.Writer) error {
+	fs := flag.NewFlagSet("pending", flag.ContinueOnError)
+	c := addCommon(fs)
+	all := fs.Bool("all", false, "list every pending decision, not only the newest 20")
+	if _, err := parse(fs, args); err != nil {
+		return err
+	}
+	rr, err := c.readLog()
+	if err != nil {
+		return err
+	}
+	limit := 20
+	if *all {
+		limit = 0
+	}
+	report.Pending(stdout, rr.Entries, limit)
 	return nil
 }
 

@@ -18,7 +18,8 @@ import (
 //
 // It never blocks the agent by failing: any error prints a note on stderr and exits 0, which
 // leaves the agent's own permission flow in charge. It never answers "allow" either — that
-// would widen what the agent may do. It answers "ask" on defer, and stays silent otherwise.
+// would widen what the agent may do. It answers "ask" on defer, shows the reasons without a
+// permission decision on review, and stays silent on continue.
 func cmdHook(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	if len(args) == 0 || args[0] != "claude-code" {
 		fmt.Fprintln(stderr, "flagman hook: only `flagman hook claude-code` is implemented")
@@ -60,22 +61,28 @@ func cmdHook(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "flagman hook: %v; no opinion given\n", err)
 		return 0
 	}
-	if l.Result.Verdict != score.Defer {
-		return 0
-	}
-	var reasons []string
-	for _, f := range score.FiredOnly(l.Findings) {
-		reasons = append(reasons, f.Rule+": "+f.Summary)
-		if len(reasons) == 4 {
-			break
-		}
-	}
-	out := map[string]any{
-		"hookSpecificOutput": map[string]any{
+	msg := report.HookMessage(l)
+	var out map[string]any
+	switch l.Result.Verdict {
+	case score.Defer:
+		out = map[string]any{"hookSpecificOutput": map[string]any{
 			"hookEventName":            "PreToolUse",
 			"permissionDecision":       "ask",
-			"permissionDecisionReason": fmt.Sprintf("flagman: %s (decision %s)\n- %s", report.Headline(l.Result.Verdict), l.ID, strings.Join(reasons, "\n- ")),
-		},
+			"permissionDecisionReason": msg,
+		}}
+	case score.Review:
+		// No permissionDecision: the agent's own permission flow stays in charge. The human sees
+		// the reasons (systemMessage); the agent gets them too (additionalContext), so it can
+		// point the human at them.
+		out = map[string]any{
+			"systemMessage": msg,
+			"hookSpecificOutput": map[string]any{
+				"hookEventName":     "PreToolUse",
+				"additionalContext": msg,
+			},
+		}
+	default:
+		return 0
 	}
 	_ = json.NewEncoder(stdout).Encode(out)
 	return 0
