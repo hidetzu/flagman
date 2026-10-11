@@ -81,13 +81,18 @@ Any agent that can run a shell command can use the exit code. A line for an agen
 ```text
 Before each commit, push, PR or merge, run `flagman check --action <step> --task <task> --run-tests`.
 Exit 0: go on. Exit 10: go on, and tell the human the reasons it printed.
-Exit 20: stop and ask the human; then run `flagman human last approved|changed|stopped`.
+Exit 20: stop and ask the human; then run `flagman human <id> approved|changed|stopped`
+with the decision id flagman printed.
 ```
 
 For Claude Code, flagman can sit in the `PreToolUse` hook. It maps `git commit`, `git push`,
-`gh pr create`, `gh pr merge`, `gh release create`, `git reset --hard` and the like to an action,
-answers **ask** (with the reasons) when the verdict is defer, and says nothing otherwise, so
-Claude Code's own permission settings still apply. It never answers *allow*, and an error in
+`gh pr create`, `gh pr merge`, `gh release create`, `git reset --hard` and the like to an action:
+
+- **defer**: it answers **ask**, with the reasons and the decision id;
+- **review**: it shows the reasons to you and to the agent, and takes no permission decision;
+- **continue**: it says nothing.
+
+Claude Code's own permission settings still apply. flagman never answers *allow*, and an error in
 flagman never blocks the agent. In `.claude/settings.json`:
 
 ```json
@@ -95,11 +100,22 @@ flagman never blocks the agent. In `.claude/settings.json`:
   "hooks": {
     "PreToolUse": [
       { "matcher": "Bash",
-        "hooks": [{ "type": "command", "command": "flagman hook claude-code --run-tests", "timeout": 600 }] }
+        "hooks": [{ "type": "command", "command": "flagman hook claude-code", "timeout": 60 }] }
     ]
   }
 }
 ```
+
+Add `--run-tests` (and raise the timeout) once `evidence.tests.command` is set and fast enough to
+run on every commit. Without it, every hook decision carries `tests.not-obtained`.
+
+To review several repositories together, point them all at one log:
+
+```sh
+export FLAGMAN_LOG=~/.local/share/flagman/decisions.jsonl
+```
+
+Each decision stores its own config, so a shared log still replays correctly.
 
 ## How it decides
 
@@ -154,6 +170,7 @@ score, the verdict, and the whole config with its hash. Afterwards, add what you
 flagman human   last approved|changed|stopped   # what the human actually did
 flagman outcome <id> ok|problem --note "reverted: broke hex parsing"
 flagman label   <id> continue|review|defer      # what it should have been, if you know
+flagman pending                                 # decisions still waiting for a human decision or outcome
 flagman log                                     # one line per decision, with its truth
 flagman show    <id>                            # everything recorded, and whether it reproduces
 ```
@@ -170,6 +187,11 @@ Steps 3 and 4 are conventions, and every report says how many truths came from e
 ([ADR 0005](docs/adr/0005-ground-truth-is-a-label-then-an-outcome-then-the-human-decision.md)).
 A `continue` whose truth turns out to be `defer` is a **false autonomy**, and flagman says so when
 you record it.
+
+⚠ **Record outcomes for `continue` decisions too.** The hook is silent on them, so they are easy
+to forget, and without their outcomes a false autonomy cannot be counted at all. `flagman
+pending` lists every decision that still has no truth, newest first, for a weekly pass. Prefer
+the decision id over `last`: by the time you answer, `last` may be a later, silent decision.
 
 ## Measuring and improving
 
