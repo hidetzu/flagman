@@ -40,11 +40,7 @@ incident, and `CLAUDE.md` §9 keeps the row.**
 | [`verification.md`](verification.md) | The three tiers, partial runs, `PASS` / `FAIL` / `NOT-VERIFIED`, ⚠ **and that an exercise must not change the world** |
 | [`owner-decisions.md`](owner-decisions.md) | Decide yourself vs. ask, `ready-for-ai` |
 | [`git.md`](git.md) | Commits, permission, forbidden operations, what never goes public |
-
-> ⚠ **FILL IN.** Add this project's own files and list them above. Typically:
-> the language (responsibility, memory, errors, naming), the layer split, the domain,
-> and anything whose rules an outsider could not guess.
-> ⚠ **Name the grounds in each.** ⚠ **A rule with no grounds gets argued away.**
+| [`go.md`](go.md) | Go: standard library only, rules stay pure, where words and outward calls live, errors |
 
 ⚠ **`MUST` = required, `SHOULD` = default, `MAY` = optional.**
 ⚠ **`⚠` marks "it hurts if you step on it"** (same convention as `CLAUDE.md`).

@@ -1,0 +1,43 @@
+{
+  "name": "h06-no-task-edit",
+  "should": "continue",
+  "why": "editing",
+  "snapshot": {
+    "taken_at": "2026-10-11T00:00:00Z",
+    "action": "edit",
+    "repo": {
+      "root": "app",
+      "branch": "feat/x",
+      "default_branch": "main",
+      "dirty": true
+    },
+    "diff": {
+      "base": "origin/main",
+      "files": [
+        {
+          "path": "cmd/x0.go",
+          "status": "M",
+          "added": 10,
+          "removed": 2
+        }
+      ],
+      "insertions": 10,
+      "deletions": 2
+    },
+    "history": {
+      "window_days": 90,
+      "touches": {}
+    },
+    "missing": [
+      {
+        "source": "tests",
+        "reason": "no test result was given"
+      }
+    ],
+    "adrs": {
+      "dir": "docs/adr",
+      "count": 4,
+      "mentions": []
+    }
+  }
+}

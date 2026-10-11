@@ -1,0 +1,58 @@
+{
+  "name": "c05-add-tests-only",
+  "should": "continue",
+  "why": "adding tests only cannot break users",
+  "snapshot": {
+    "taken_at": "2026-10-11T00:00:00Z",
+    "action": "commit",
+    "repo": {
+      "root": "app",
+      "branch": "feat/x",
+      "default_branch": "main",
+      "dirty": true
+    },
+    "diff": {
+      "base": "origin/main",
+      "files": [
+        {
+          "path": "internal/parser/fuzz_test.go",
+          "status": "A",
+          "added": 60,
+          "removed": 0
+        }
+      ],
+      "insertions": 60,
+      "deletions": 0
+    },
+    "history": {
+      "window_days": 90,
+      "touches": {}
+    },
+    "tests": {
+      "status": "pass",
+      "source": "command",
+      "command": "go test ./..."
+    },
+    "task": {
+      "ref": "TASK.md",
+      "state": "open",
+      "has_goal": true,
+      "has_scope": true,
+      "has_out_of_scope": true,
+      "has_acceptance_criteria": true,
+      "scope": [
+        "internal/parser/"
+      ],
+      "out_of_scope": [
+        "internal/billing/",
+        "api/v1/"
+      ],
+      "open_decisions": []
+    },
+    "adrs": {
+      "dir": "docs/adr",
+      "count": 4,
+      "mentions": []
+    }
+  }
+}

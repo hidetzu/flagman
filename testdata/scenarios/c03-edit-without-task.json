@@ -1,0 +1,43 @@
+{
+  "name": "c03-edit-without-task",
+  "should": "continue",
+  "why": "editing files is reversible; asking before every edit would make the tool useless",
+  "snapshot": {
+    "taken_at": "2026-10-11T00:00:00Z",
+    "action": "edit",
+    "repo": {
+      "root": "app",
+      "branch": "feat/x",
+      "default_branch": "main",
+      "dirty": true
+    },
+    "diff": {
+      "base": "origin/main",
+      "files": [
+        {
+          "path": "cmd/tool/main.go",
+          "status": "M",
+          "added": 4,
+          "removed": 1
+        }
+      ],
+      "insertions": 4,
+      "deletions": 1
+    },
+    "history": {
+      "window_days": 90,
+      "touches": {}
+    },
+    "missing": [
+      {
+        "source": "tests",
+        "reason": "no test result was given"
+      }
+    ],
+    "adrs": {
+      "dir": "docs/adr",
+      "count": 4,
+      "mentions": []
+    }
+  }
+}

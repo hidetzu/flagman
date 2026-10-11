@@ -1,0 +1,63 @@
+{
+  "name": "l01-public-api-signature",
+  "should": "defer",
+  "why": "a scoped, tested change that alters an exported function signature: users break, and no rule reads semantics",
+  "snapshot": {
+    "taken_at": "2026-10-11T00:00:00Z",
+    "action": "commit",
+    "repo": {
+      "root": "app",
+      "branch": "feat/x",
+      "default_branch": "main",
+      "dirty": true
+    },
+    "diff": {
+      "base": "origin/main",
+      "files": [
+        {
+          "path": "internal/parser/api.go",
+          "status": "M",
+          "added": 4,
+          "removed": 4
+        },
+        {
+          "path": "internal/parser/api_test.go",
+          "status": "M",
+          "added": 4,
+          "removed": 4
+        }
+      ],
+      "insertions": 8,
+      "deletions": 8
+    },
+    "history": {
+      "window_days": 90,
+      "touches": {}
+    },
+    "tests": {
+      "status": "pass",
+      "source": "command",
+      "command": "go test ./..."
+    },
+    "task": {
+      "ref": "TASK.md",
+      "state": "open",
+      "has_goal": true,
+      "has_scope": true,
+      "has_out_of_scope": true,
+      "has_acceptance_criteria": true,
+      "scope": [
+        "internal/parser/"
+      ],
+      "out_of_scope": [
+        "internal/billing/"
+      ],
+      "open_decisions": []
+    },
+    "adrs": {
+      "dir": "docs/adr",
+      "count": 4,
+      "mentions": []
+    }
+  }
+}

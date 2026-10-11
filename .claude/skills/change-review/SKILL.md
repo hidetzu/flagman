@@ -60,8 +60,12 @@ git log --oneline <default>..HEAD  # is it split by reason
 | **silent rejections** | Something discarded with nothing counted (⚠ indistinguishable from something that never arrived) |
 | **internal state shown to a human** | A raw enum, an errno, or a status code reaching output |
 
-> ⚠ **FILL IN.** Add the rows this project's own rules produce, and name the rule file each
-> comes from. ⚠ **Never restate a rule's text here** — a row says what to look at and how it fails.
+| ⚠ **A rule that reads outside its snapshot** | `internal/rules` or `internal/score` imports `os`, `os/exec`, `net`, `time.Now` ([`go.md`](../../rules/go.md)) |
+| ⚠ **A rule's meaning changed and `RulesVersion` did not** | Old decisions now replay to a different verdict with nothing saying why ([`go.md`](../../rules/go.md)) |
+| ⚠ **A weight written into code** | A number in a rule that is not a config field ([`go.md`](../../rules/go.md)) |
+| ⚠ **`not-obtained` shown as fine** | A missing source reported as `clear`, or left out of "Not obtained" ([`evidence.md`](../../rules/evidence.md)) |
+| ⚠ **Something new reaches the log or the network** | File contents, diff text or a raw command in the log; a new outward call ([ADR 0007](../../../docs/adr/0007-nothing-leaves-the-machine-unless-an-issue-is-named.md)) |
+| ⚠ **A metric without its denominator** | A rate printed with no `num/den` ([`evidence.md`](../../rules/evidence.md)) |
 
 ---
 

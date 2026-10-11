@@ -1,0 +1,64 @@
+{
+  "name": "c04-push-own-branch",
+  "should": "continue",
+  "why": "pushing a tested, scoped change to the agent's own feature branch is routine and can be followed up",
+  "snapshot": {
+    "taken_at": "2026-10-11T00:00:00Z",
+    "action": "push",
+    "repo": {
+      "root": "app",
+      "branch": "feat/x",
+      "default_branch": "main",
+      "dirty": true
+    },
+    "diff": {
+      "base": "origin/main",
+      "files": [
+        {
+          "path": "internal/parser/ast.go",
+          "status": "M",
+          "added": 30,
+          "removed": 8
+        },
+        {
+          "path": "internal/parser/ast_test.go",
+          "status": "M",
+          "added": 40,
+          "removed": 0
+        }
+      ],
+      "insertions": 70,
+      "deletions": 8
+    },
+    "history": {
+      "window_days": 90,
+      "touches": {}
+    },
+    "tests": {
+      "status": "pass",
+      "source": "command",
+      "command": "go test ./..."
+    },
+    "task": {
+      "ref": "TASK.md",
+      "state": "open",
+      "has_goal": true,
+      "has_scope": true,
+      "has_out_of_scope": true,
+      "has_acceptance_criteria": true,
+      "scope": [
+        "internal/parser/"
+      ],
+      "out_of_scope": [
+        "internal/billing/",
+        "api/v1/"
+      ],
+      "open_decisions": []
+    },
+    "adrs": {
+      "dir": "docs/adr",
+      "count": 4,
+      "mentions": []
+    }
+  }
+}

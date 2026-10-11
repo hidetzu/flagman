@@ -1,7 +1,4 @@
-# <project> — how we work
-
-⚠ **This file is a skeleton.** ⚠ **Every `FILL IN` below is a claim only this project can make.**
-⚠ **Delete this line and the `FILL IN` markers once they are filled.**
+# flagman — how we work
 
 This file holds **how to work**.
 **What may be claimed** goes in `docs/SPEC.md`; **why a decision was made** goes in `docs/adr/`.
@@ -43,14 +40,24 @@ Before starting work, read `.claude/rules/README.md`.
 
 ## 0. What this repository is
 
-> ⚠ **FILL IN.** One paragraph. What the artefact is, and what the project is an experiment in.
-> ⚠ **If how it gets built is also a subject, say so here** — otherwise nobody will treat it as one.
+flagman is a Go CLI an AI coding agent calls before a step (commit, push, PR, merge, release…).
+From evidence in the repository — the diff, tests, history, the task, decision records — it answers
+`continue` / `review` / `defer`, logs the decision with everything it was made from, and later
+replays the log to measure whether a change to its rules lowered false autonomy and at what cost.
+⚠ **The project is an experiment in whether "when should the AI ask a human" can be improved by
+measurement rather than by intuition.** The owner's brief is [`docs/BRIEF.md`](docs/BRIEF.md);
+what may be claimed is [`docs/SPEC.md`](docs/SPEC.md); prior art is [`docs/RESEARCH.md`](docs/RESEARCH.md).
+
+⚠ **`.claude/` is a port of [`hidetzu/claude-dev-template`](https://github.com/hidetzu/claude-dev-template).**
+⚠ **When this project has to fight the template to do the right thing, the template is wrong** —
+the fix goes back there naming this project.
 
 ---
 
 ## 1. The first principle
 
-> ⚠ **FILL IN.** One line, in the form `<X> before <Y>`, and the order is never swapped.
+> **Never miss a needed human before saving a human's time.** ⚠ False autonomy outranks every
+> other measure ([ADR 0006](docs/adr/0006-a-change-is-better-only-if-false-autonomy-does-not-rise-on-decisions-it-was-not-fitted-on.md)).
 
 ⚠ **Whatever it says, it never outranks the evidence rules.**
 ⚠ **Those are [`.claude/rules/evidence.md`](.claude/rules/evidence.md), and they hold everywhere** —
@@ -71,9 +78,23 @@ re-word**, because re-wording them is how they get softened.
 
 ## 3. Architecture boundaries
 
-> ⚠ **FILL IN.** Four or five lines naming what this project keeps out and what it pushes where.
-> ⚠ **Then list what may not be introduced without a reason** (frameworks, runtime dependencies,
-> a second build system, threads before a single-threaded version works).
+⚠ **One Go binary, standard library only** ([ADR 0002](docs/adr/0002-one-go-binary-standard-library-only.md)).
+⚠ **Only `internal/collect` touches the outside; `internal/rules` is a pure function of a stored
+snapshot** ([ADR 0003](docs/adr/0003-rules-are-pure-functions-of-a-stored-snapshot.md)).
+⚠ **Every weight, threshold and cost is config (`internal/config`), never a constant in a rule.**
+⚠ **Every sentence a human reads is `internal/report`.** ⚠ **Agent-specific code is an adapter in
+`cmd/flagman`** ([ADR 0008](docs/adr/0008-no-llm-in-the-core-agents-plug-in-through-adapters.md)).
+
+⚠ **Not to be introduced without a reason recorded in an ADR:**
+
+```text
+any third-party Go module
+a network call other than `gh issue view` for a named issue (ADR 0007)
+a language model in the rules (ADR 0008)
+storing file contents or diff text in the log (ADR 0007)
+fitting rule weights automatically (ADR 0006)
+the agent hook answering "allow"
+```
 
 Two clauses hold regardless of the domain:
 
@@ -94,8 +115,18 @@ Two clauses hold regardless of the domain:
 - **Never rename in bulk.** Changing a term does not license a sweep through the ADRs and past
   discussions.
 
-> ⚠ **FILL IN.** Where this project's names come from (an RFC, a standard, the users' own words),
-> and any mark whose meaning is already spoken for.
+⚠ **Names come from the brief and the research it named**: *false autonomy* (the brief),
+*defer* (Learning to Defer), *coverage* is printed as "left to the AI alone" because that is the
+brief's own wording. ⚠ **The three verdicts are `continue`, `review`, `defer` — never renamed,
+never a fourth** (a new verdict is a spec change). ⚠ **Rule names are `area.what-was-seen`**
+(`diff.outside-scope`), and a rule name in the log is permanent: rename one and old decisions stop
+matching ([ADR 0003](docs/adr/0003-rules-are-pure-functions-of-a-stored-snapshot.md)).
+
+⚠ **Statuses already spoken for**: `fired`, `clear`, `not-obtained`, `off`. ⚠ **`not-obtained` is
+never shown as `clear`** (`.claude/rules/evidence.md`).
+
+⚠ **CLI output, documents, code and commits are English** (a public tool other agents read).
+⚠ **A Japanese summary sits at the top of the README** for the owner.
 
 ### 4-1. Never open with what does not work
 
@@ -177,4 +208,7 @@ a row with a test is a wall.
 
 | What happened | What to do instead |
 |---|---|
-| — | — |
+| ⚠ **flagman polluted its own evidence** (2026-10-11, found by dogfooding): it wrote `.flagman/.gitignore` into the working tree, so the next check saw an untracked change to the gate's config and deferred in every fresh repository | ⚠ **Nothing flagman writes may land in the working tree as a side effect.** The log is excluded through `.git/info/exclude`. Guarded by `TestFeedbackLoop` (a second check must not mention `.flagman/`) |
+| ⚠ **The task file counted as a change outside its own scope** (2026-10-11, dogfooding): `TASK.md` itself fired `diff.not-in-scope` | The task file is skipped by the scope rules. Guarded by `TestTheTaskFileIsNotOutsideItsOwnScope` |
+| ⚠ **"Not obtained" printed as an empty heading** (2026-10-11, dogfooding on this repository with no task): the task rules could not run, and no line said which | Rules that could not run are listed under the heading, grouped by reason. Guarded by `TestNotObtainedIsNeverAnEmptyHeading` |
+| ⚠ **A merged pull request named as a task read as open** (2026-10-11, the external tier against `cli/cli#1`): `gh` reports `merged`, and `task.closed` only knew `closed` | Both are finished. Guarded by `TestMergedOrClosedTaskIsHard`, `TestIssueStateAndLabelsAreRead` |
