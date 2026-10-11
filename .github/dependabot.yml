@@ -1,0 +1,7 @@
+# The Go module has no dependencies (docs/adr/0002); what ages is the CI actions.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
