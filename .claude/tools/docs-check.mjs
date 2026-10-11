@@ -104,6 +104,36 @@ const CASES = [
         : { ok: true, said: "no count is written into docs/SPEC.md (counts are announced by the runner)" };
     },
   },
+  {
+    name: "spec-cases-exist",
+    // ⚠ Grounds: docs/SPEC.md §1 — "what asserts it" names a case, not a file, and a static check
+    //   can stop a row that names no case or a case that does not exist. ⚠ Added for flagman.
+    //   ⚠ It cannot tell whether the case covers every clause of the claim; that is the reviewer's.
+    run() {
+      const spec = stripMarkdown(read("docs/SPEC.md"));
+      const sec = spec.split(/^## /m).find((s) => s.startsWith("1."));
+      if (!sec) return { ok: false, said: "docs/SPEC.md has no section 1" };
+      const rows = sec.split("\n").filter((l) => /^\|/.test(l) && !/^\|\s*-/.test(l)).slice(1);
+      if (!rows.length) return { ok: false, said: "docs/SPEC.md §1 has no rows (zero matches is not zero problems)" };
+      const testSrc = execFileSync("git", ["ls-files", "*_test.go"], { cwd: ROOT, encoding: "utf8" })
+        .trim().split("\n").filter(Boolean).map(read).join("\n");
+      const bad = [];
+      let named = 0;
+      for (const row of rows) {
+        const cells = row.split("|").map((c) => c.trim());
+        const last = cells[cells.length - 2] ?? "";
+        const names = [...last.matchAll(/`(Test[A-Za-z0-9_]+)`/g)].map((m) => m[1]);
+        if (!names.length) { bad.push(`no case named: ${row.slice(0, 60)}`); continue; }
+        for (const n of names) {
+          named++;
+          if (!new RegExp(`^func ${n}\\(`, "m").test(testSrc)) bad.push(`${n} does not exist`);
+        }
+      }
+      return bad.length
+        ? { ok: false, said: `${bad.length} problem(s) in docs/SPEC.md §1:\n      ` + bad.join("\n      ") }
+        : { ok: true, said: `every SPEC §1 row names a case, and all ${named} named cases exist (${rows.length} rows)` };
+    },
+  },
 ];
 
 // ── the runner ─────────────────────────────────────────────────────────────

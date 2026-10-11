@@ -13,4 +13,10 @@
 .env
 .envrc
 
-# ⚠ FILL IN: build output, caches, and generated artefacts for this project.
+
+# Owner's scratch notes (the original brief is copied to docs/BRIEF.md). Never published.
+/tmp/
+
+# Build output.
+/bin/
+/dist/
