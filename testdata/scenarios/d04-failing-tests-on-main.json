@@ -1,0 +1,64 @@
+{
+  "name": "d04-failing-tests-on-main",
+  "should": "defer",
+  "why": "tests fail and the commit would land directly on the default branch",
+  "snapshot": {
+    "taken_at": "2026-10-11T00:00:00Z",
+    "action": "commit",
+    "repo": {
+      "root": "app",
+      "branch": "main",
+      "default_branch": "main",
+      "dirty": true
+    },
+    "diff": {
+      "base": "origin/main",
+      "files": [
+        {
+          "path": "internal/parser/lex.go",
+          "status": "M",
+          "added": 3,
+          "removed": 1
+        },
+        {
+          "path": "internal/parser/lex_test.go",
+          "status": "M",
+          "added": 3,
+          "removed": 0
+        }
+      ],
+      "insertions": 6,
+      "deletions": 1
+    },
+    "history": {
+      "window_days": 90,
+      "touches": {}
+    },
+    "tests": {
+      "status": "fail",
+      "source": "command",
+      "command": "go test ./..."
+    },
+    "task": {
+      "ref": "TASK.md",
+      "state": "open",
+      "has_goal": true,
+      "has_scope": true,
+      "has_out_of_scope": true,
+      "has_acceptance_criteria": true,
+      "scope": [
+        "internal/parser/"
+      ],
+      "out_of_scope": [
+        "internal/billing/",
+        "api/v1/"
+      ],
+      "open_decisions": []
+    },
+    "adrs": {
+      "dir": "docs/adr",
+      "count": 4,
+      "mentions": []
+    }
+  }
+}

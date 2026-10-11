@@ -1,0 +1,81 @@
+{
+  "name": "h09-large-untested",
+  "should": "review",
+  "why": "large untested change: a look was useful",
+  "snapshot": {
+    "taken_at": "2026-10-11T00:00:00Z",
+    "action": "commit",
+    "repo": {
+      "root": "app",
+      "branch": "feat/x",
+      "default_branch": "main",
+      "dirty": true
+    },
+    "diff": {
+      "base": "origin/main",
+      "files": [
+        {
+          "path": "internal/parser/l1_0.go",
+          "status": "M",
+          "added": 50,
+          "removed": 10
+        },
+        {
+          "path": "internal/parser/l1_1.go",
+          "status": "M",
+          "added": 50,
+          "removed": 10
+        },
+        {
+          "path": "internal/parser/l1_2.go",
+          "status": "M",
+          "added": 50,
+          "removed": 10
+        },
+        {
+          "path": "internal/parser/l1_3.go",
+          "status": "M",
+          "added": 50,
+          "removed": 10
+        },
+        {
+          "path": "internal/parser/l1_4.go",
+          "status": "M",
+          "added": 50,
+          "removed": 10
+        }
+      ],
+      "insertions": 250,
+      "deletions": 50
+    },
+    "history": {
+      "window_days": 90,
+      "touches": {}
+    },
+    "tests": {
+      "status": "pass",
+      "source": "command",
+      "command": "go test ./..."
+    },
+    "task": {
+      "ref": "TASK.md",
+      "state": "open",
+      "has_goal": true,
+      "has_scope": true,
+      "has_out_of_scope": true,
+      "has_acceptance_criteria": true,
+      "scope": [
+        "internal/parser/"
+      ],
+      "out_of_scope": [
+        "internal/billing/"
+      ],
+      "open_decisions": []
+    },
+    "adrs": {
+      "dir": "docs/adr",
+      "count": 4,
+      "mentions": []
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "name": "l03-user-facing-wording",
+  "should": "defer",
+  "why": "error messages a human reads were rewritten: owner-decisions.md puts that in the Ask column, but wording is not a path flagman knows",
+  "snapshot": {
+    "taken_at": "2026-10-11T00:00:00Z",
+    "action": "commit",
+    "repo": {
+      "root": "app",
+      "branch": "feat/x",
+      "default_branch": "main",
+      "dirty": true
+    },
+    "diff": {
+      "base": "origin/main",
+      "files": [
+        {
+          "path": "internal/parser/messages.go",
+          "status": "M",
+          "added": 12,
+          "removed": 12
+        },
+        {
+          "path": "internal/parser/messages_test.go",
+          "status": "M",
+          "added": 6,
+          "removed": 6
+        }
+      ],
+      "insertions": 18,
+      "deletions": 18
+    },
+    "history": {
+      "window_days": 90,
+      "touches": {}
+    },
+    "tests": {
+      "status": "pass",
+      "source": "command",
+      "command": "go test ./..."
+    },
+    "task": {
+      "ref": "TASK.md",
+      "state": "open",
+      "has_goal": true,
+      "has_scope": true,
+      "has_out_of_scope": true,
+      "has_acceptance_criteria": true,
+      "scope": [
+        "internal/parser/"
+      ],
+      "out_of_scope": [
+        "internal/billing/"
+      ],
+      "open_decisions": []
+    },
+    "adrs": {
+      "dir": "docs/adr",
+      "count": 4,
+      "mentions": []
+    }
+  }
+}

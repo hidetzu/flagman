@@ -1,0 +1,57 @@
+{
+  "name": "c01-typo-in-docs",
+  "should": "continue",
+  "why": "a documentation typo on a feature branch, inside scope: nothing here needs a human",
+  "snapshot": {
+    "taken_at": "2026-10-11T00:00:00Z",
+    "action": "commit",
+    "repo": {
+      "root": "app",
+      "branch": "feat/x",
+      "default_branch": "main",
+      "dirty": true
+    },
+    "diff": {
+      "base": "origin/main",
+      "files": [
+        {
+          "path": "docs/guide.md",
+          "status": "M",
+          "added": 1,
+          "removed": 1
+        }
+      ],
+      "insertions": 1,
+      "deletions": 1
+    },
+    "history": {
+      "window_days": 90,
+      "touches": {}
+    },
+    "tests": {
+      "status": "pass",
+      "source": "command",
+      "command": "go test ./..."
+    },
+    "task": {
+      "ref": "TASK.md",
+      "state": "open",
+      "has_goal": true,
+      "has_scope": true,
+      "has_out_of_scope": true,
+      "has_acceptance_criteria": true,
+      "scope": [
+        "docs/"
+      ],
+      "out_of_scope": [
+        "internal/"
+      ],
+      "open_decisions": []
+    },
+    "adrs": {
+      "dir": "docs/adr",
+      "count": 4,
+      "mentions": []
+    }
+  }
+}

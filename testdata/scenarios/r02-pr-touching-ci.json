@@ -1,0 +1,70 @@
+{
+  "name": "r02-pr-touching-ci",
+  "should": "review",
+  "why": "opening a PR that also changes CI: CI runs with the repository's credentials, someone should read it",
+  "snapshot": {
+    "taken_at": "2026-10-11T00:00:00Z",
+    "action": "pr",
+    "repo": {
+      "root": "app",
+      "branch": "feat/x",
+      "default_branch": "main",
+      "dirty": true
+    },
+    "diff": {
+      "base": "origin/main",
+      "files": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "status": "M",
+          "added": 5,
+          "removed": 2
+        },
+        {
+          "path": "internal/parser/lex.go",
+          "status": "M",
+          "added": 3,
+          "removed": 1
+        },
+        {
+          "path": "internal/parser/lex_test.go",
+          "status": "M",
+          "added": 3,
+          "removed": 0
+        }
+      ],
+      "insertions": 11,
+      "deletions": 3
+    },
+    "history": {
+      "window_days": 90,
+      "touches": {}
+    },
+    "tests": {
+      "status": "pass",
+      "source": "command",
+      "command": "go test ./..."
+    },
+    "task": {
+      "ref": "TASK.md",
+      "state": "open",
+      "has_goal": true,
+      "has_scope": true,
+      "has_out_of_scope": true,
+      "has_acceptance_criteria": true,
+      "scope": [
+        "internal/parser/",
+        ".github/"
+      ],
+      "out_of_scope": [
+        "api/v1/"
+      ],
+      "open_decisions": []
+    },
+    "adrs": {
+      "dir": "docs/adr",
+      "count": 4,
+      "mentions": []
+    }
+  }
+}

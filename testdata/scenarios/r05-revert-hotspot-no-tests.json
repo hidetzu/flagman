@@ -1,0 +1,69 @@
+{
+  "name": "r05-revert-hotspot-no-tests",
+  "should": "review",
+  "why": "this file was reverted last week and changes constantly; a change without a test deserves a human look",
+  "snapshot": {
+    "taken_at": "2026-10-11T00:00:00Z",
+    "action": "commit",
+    "repo": {
+      "root": "app",
+      "branch": "feat/x",
+      "default_branch": "main",
+      "dirty": true
+    },
+    "diff": {
+      "base": "origin/main",
+      "files": [
+        {
+          "path": "internal/parser/eval.go",
+          "status": "M",
+          "added": 15,
+          "removed": 5
+        }
+      ],
+      "insertions": 15,
+      "deletions": 5
+    },
+    "history": {
+      "window_days": 90,
+      "touches": {
+        "internal/parser/eval.go": 9
+      },
+      "reverts": [
+        {
+          "commit": "abc1234",
+          "subject": "Revert \"parser: inline eval\"",
+          "paths": [
+            "internal/parser/eval.go"
+          ]
+        }
+      ]
+    },
+    "tests": {
+      "status": "pass",
+      "source": "command",
+      "command": "go test ./..."
+    },
+    "task": {
+      "ref": "TASK.md",
+      "state": "open",
+      "has_goal": true,
+      "has_scope": true,
+      "has_out_of_scope": true,
+      "has_acceptance_criteria": true,
+      "scope": [
+        "internal/parser/"
+      ],
+      "out_of_scope": [
+        "internal/billing/",
+        "api/v1/"
+      ],
+      "open_decisions": []
+    },
+    "adrs": {
+      "dir": "docs/adr",
+      "count": 4,
+      "mentions": []
+    }
+  }
+}
